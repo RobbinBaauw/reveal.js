@@ -313,7 +313,7 @@ export default class SlideContent {
 
 					// If the media is ready, start playback
 					if( el.readyState > 1 ) {
-						this.startEmbeddedMedia( { target: el } );
+						this.startEmbeddedMedia( { target: el }, isSpeakerNotesWindow );
 					}
 					// Mobile devices never fire a loaded event so instead
 					// of waiting, we initiate playback
@@ -380,7 +380,7 @@ export default class SlideContent {
 	 *
 	 * @param {object} event
 	 */
-	startEmbeddedMedia( event ) {
+	startEmbeddedMedia( event, isSpeakerNotesWindow = false ) {
 
 		let isAttachedToDOM = !!closest( event.target, 'html' ),
 			isVisible  		= !!closest( event.target, '.present' );
@@ -389,7 +389,13 @@ export default class SlideContent {
 			// Don't restart if media is already playing
 			if( event.target.paused || event.target.ended ) {
 				event.target.currentTime = 0;
-				event.target.play();
+
+				const func = () => event.target.play();
+				if (isSpeakerNotesWindow) {
+					setTimeout(func, 500);
+				} else {
+					func();
+				}
 			}
 		}
 
